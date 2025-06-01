@@ -80,6 +80,7 @@ namespace Traits
         };
 
         using AsStdFunction = typename AsStdFunctionImpl::type;
+        using AsStdFunctionDecayed = typename AsStdFunctionImpl::DecayedType;
     };
 
     /**

@@ -16,6 +16,22 @@ namespace Traits::Tests
         {}
     };
 
+    struct FunctionObject1Parameter
+    {
+        std::string operator()(int) const
+        {
+            return "test";
+        }
+    };
+
+    struct FunctionObject2Parameters
+    {
+        double operator()(double, std::string const&) const
+        {
+            return 0.;
+        }
+    };
+
 #define CREATE_MEMBER_FUNCTION_VARIANT(Qualifier, Name) \
     struct FunctionObjectQualified##Name \
     { \
@@ -421,5 +437,74 @@ namespace Traits::Tests
             Traits::FunctionTraits<
                 decltype(&MemberFunctionStructConstVolatileRvalueRefNoexcept::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isVolatile = true, .isRvalueRef = true, .isNoexcept = true}));
+    }
+
+    TEST_F(TraitsTests, FunctionObjectArity)
+    {
+        EXPECT_EQ(FunctionTraits<FunctionObjectTrivial>::arity, 0);
+        EXPECT_EQ(FunctionTraits<FunctionObject1Parameter>::arity, 1);
+        EXPECT_EQ(FunctionTraits<FunctionObject2Parameters>::arity, 2);
+    }
+
+    TEST_F(TraitsTests, FunctionObjectArgsTuple)
+    {
+        using Traits = FunctionTraits<FunctionObject2Parameters>;
+        EXPECT_TRUE((std::is_same_v<Traits::ArgsTuple, std::tuple<double, std::string const&>>));
+        EXPECT_TRUE((std::is_same_v<Traits::ArgsTupleDecayed, std::tuple<double, std::string>>));
+    }
+
+    TEST_F(TraitsTests, CanGetReturnTypeFromFunctionObject)
+    {
+        using Traits = FunctionTraits<FunctionObject2Parameters>;
+        EXPECT_TRUE((std::is_same_v<Traits::ReturnType, double>));
+    }
+
+    TEST_F(TraitsTests, CanGetIndividualArgumentTypeFromFunctionObject)
+    {
+        using Traits = FunctionTraits<FunctionObject2Parameters>;
+        EXPECT_TRUE((std::is_same_v<Traits::template Argument<0>, double>));
+        EXPECT_TRUE((std::is_same_v<Traits::template Argument<1>, std::string const&>));
+        EXPECT_TRUE((std::is_same_v<Traits::template ArgumentDecayed<1>, std::string>));
+    }
+
+    TEST_F(TraitsTests, CanGetStdFunctionTypeFromFunctionObject)
+    {
+        using Traits = FunctionTraits<FunctionObject2Parameters>;
+        using StdFunctionType = Traits::AsStdFunction;
+        EXPECT_TRUE((std::is_same_v<StdFunctionType, std::function<double(double, std::string const&)>>));
+        using StdFunctionTypeDecayed = Traits::AsStdFunctionDecayed;
+        EXPECT_TRUE((std::is_same_v<StdFunctionTypeDecayed, std::function<double(double, std::string)>>));
+    }
+
+    TEST_F(TraitsTests, CanInspectLambdaFunction)
+    {
+        auto lambda = [](std::string const& a, double b) -> std::string {
+            return "asdf";
+        };
+        using Traits = FunctionTraits<decltype(lambda)>;
+        EXPECT_TRUE((std::is_same_v<Traits::ReturnType, std::string>));
+        EXPECT_EQ(Traits::arity, 2);
+        EXPECT_TRUE((std::is_same_v<Traits::ArgsTuple, std::tuple<std::string const&, double>>));
+        EXPECT_TRUE((std::is_same_v<Traits::ArgsTupleDecayed, std::tuple<std::string, double>>));
+        EXPECT_TRUE((std::is_same_v<Traits::template Argument<0>, std::string const&>));
+        EXPECT_TRUE((std::is_same_v<Traits::template Argument<1>, double>));
+        EXPECT_TRUE((std::is_same_v<Traits::template ArgumentDecayed<0>, std::string>));
+        EXPECT_TRUE((std::is_same_v<Traits::template ArgumentDecayed<1>, double>));
+    }
+
+    TEST_F(TraitsTests, CanInspectMutableLambdaFunction)
+    {
+        auto lambda = [](std::string const& a, double b) mutable -> std::string {
+            return "asdf";
+        };
+        using Traits = FunctionTraits<decltype(lambda)>;
+        EXPECT_TRUE((std::is_same_v<Traits::ReturnType, std::string>));
+        EXPECT_EQ(Traits::arity, 2);
+        EXPECT_TRUE((std::is_same_v<Traits::ArgsTuple, std::tuple<std::string const&, double>>));
+        EXPECT_TRUE((std::is_same_v<Traits::ArgsTupleDecayed, std::tuple<std::string, double>>));
+        EXPECT_TRUE((std::is_same_v<Traits::template Argument<0>, std::string const&>));
+        EXPECT_TRUE((std::is_same_v<Traits::template Argument<1>, double>));
+        EXPECT_TRUE((std::is_same_v<Traits::template ArgumentDecayed<0>, std::string>));
+        EXPECT_TRUE((std::is_same_v<Traits::template ArgumentDecayed<1>, double>));
     }
 }
