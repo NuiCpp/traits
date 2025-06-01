@@ -87,178 +87,336 @@ namespace Traits::Tests
         EXPECT_TRUE((std::is_same_v<Traits::ReturnType, void>));
     }
 
-    TEST_F(TraitsTests, CanExtractQualifiersFromFunctionObjectOperator)
+    TEST_F(TraitsTests, FunctionObjectQualifiedNone)
     {
-        // Nothing
         EXPECT_EQ(Traits::FunctionTraits<FunctionObjectQualifiedNone>::qualifiers, (Traits::FunctionQualifiers{}));
+    }
 
-        // CV
+    TEST_F(TraitsTests, FunctionObjectQualifiedConst)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedConst>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true}));
+    }
+
+    TEST_F(TraitsTests, FunctionObjectQualifiedVolatile)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedVolatile>::qualifiers,
             (Traits::FunctionQualifiers{.isVolatile = true}));
+    }
+
+    TEST_F(TraitsTests, FunctionObjectQualifiedConstVolatile)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedConstVolatile>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isVolatile = true}));
+    }
 
-        // &
+    TEST_F(TraitsTests, FunctionObjectQualifiedRef)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedRef>::qualifiers,
             (Traits::FunctionQualifiers{.isRef = true}));
+    }
+
+    TEST_F(TraitsTests, FunctionObjectQualifiedConstRef)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedConstRef>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isRef = true}));
+    }
+
+    TEST_F(TraitsTests, FunctionObjectQualifiedVolatileRef)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedVolatileRef>::qualifiers,
             (Traits::FunctionQualifiers{.isVolatile = true, .isRef = true}));
+    }
+
+    TEST_F(TraitsTests, FunctionObjectQualifiedConstVolatileRef)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedConstVolatileRef>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isVolatile = true, .isRef = true}));
+    }
 
-        // &&
+    TEST_F(TraitsTests, FunctionObjectQualifiedRvalueRef)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedRvalueRef>::qualifiers,
             (Traits::FunctionQualifiers{.isRvalueRef = true}));
+    }
+
+    TEST_F(TraitsTests, FunctionObjectQualifiedConstRvalueRef)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedConstRvalueRef>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isRvalueRef = true}));
+    }
+
+    TEST_F(TraitsTests, FunctionObjectQualifiedVolatileRvalueRef)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedVolatileRvalueRef>::qualifiers,
             (Traits::FunctionQualifiers{.isVolatile = true, .isRvalueRef = true}));
+    }
+
+    TEST_F(TraitsTests, FunctionObjectQualifiedConstVolatileRvalueRef)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedConstVolatileRvalueRef>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isVolatile = true, .isRvalueRef = true}));
+    }
 
-        // noexcept CV
+    TEST_F(TraitsTests, FunctionObjectQualifiedNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedNoexcept>::qualifiers,
             (Traits::FunctionQualifiers{.isNoexcept = true}));
+    }
+
+    TEST_F(TraitsTests, FunctionObjectQualifiedConstNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedConstNoexcept>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isNoexcept = true}));
+    }
+
+    TEST_F(TraitsTests, FunctionObjectQualifiedVolatileNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedVolatileNoexcept>::qualifiers,
             (Traits::FunctionQualifiers{.isVolatile = true, .isNoexcept = true}));
+    }
+
+    TEST_F(TraitsTests, FunctionObjectQualifiedConstVolatileNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedConstVolatileNoexcept>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isVolatile = true, .isNoexcept = true}));
+    }
 
-        // noexcept &
+    TEST_F(TraitsTests, FunctionObjectQualifiedRefNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedRefNoexcept>::qualifiers,
             (Traits::FunctionQualifiers{.isRef = true, .isNoexcept = true}));
+    }
+
+    TEST_F(TraitsTests, FunctionObjectQualifiedConstRefNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedConstRefNoexcept>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isRef = true, .isNoexcept = true}));
+    }
+
+    TEST_F(TraitsTests, FunctionObjectQualifiedVolatileRefNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedVolatileRefNoexcept>::qualifiers,
             (Traits::FunctionQualifiers{.isVolatile = true, .isRef = true, .isNoexcept = true}));
+    }
+
+    TEST_F(TraitsTests, FunctionObjectQualifiedConstVolatileRefNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedConstVolatileRefNoexcept>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isVolatile = true, .isRef = true, .isNoexcept = true}));
+    }
 
-        // noexcept &&
+    TEST_F(TraitsTests, FunctionObjectQualifiedRvalueRefNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedRvalueRefNoexcept>::qualifiers,
             (Traits::FunctionQualifiers{.isRvalueRef = true, .isNoexcept = true}));
+    }
+
+    TEST_F(TraitsTests, FunctionObjectQualifiedConstRvalueRefNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedConstRvalueRefNoexcept>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isRvalueRef = true, .isNoexcept = true}));
+    }
+
+    TEST_F(TraitsTests, FunctionObjectQualifiedVolatileRvalueRefNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedVolatileRvalueRefNoexcept>::qualifiers,
             (Traits::FunctionQualifiers{.isVolatile = true, .isRvalueRef = true, .isNoexcept = true}));
+    }
+
+    TEST_F(TraitsTests, FunctionObjectQualifiedConstVolatileRvalueRefNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<FunctionObjectQualifiedConstVolatileRvalueRefNoexcept>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isVolatile = true, .isRvalueRef = true, .isNoexcept = true}));
     }
 
-    TEST_F(TraitsTests, CanExtractQualifiersFromMemberFunction)
+    TEST_F(TraitsTests, MemberFunctionQualifiersNone)
     {
-        // Nothing
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructNone::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{}));
+    }
 
-        // CV
+    TEST_F(TraitsTests, MemberFunctionQualifiersConst)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructConst::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true}));
+    }
+
+    TEST_F(TraitsTests, MemberFunctionQualifiersVolatile)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructVolatile::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isVolatile = true}));
+    }
+
+    TEST_F(TraitsTests, MemberFunctionQualifiersConstVolatile)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructConstVolatile::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isVolatile = true}));
+    }
 
-        // &
+    TEST_F(TraitsTests, MemberFunctionQualifiersRef)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructRef::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isRef = true}));
+    }
+
+    TEST_F(TraitsTests, MemberFunctionQualifiersConstRef)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructConstRef::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isRef = true}));
+    }
+
+    TEST_F(TraitsTests, MemberFunctionQualifiersVolatileRef)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructVolatileRef::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isVolatile = true, .isRef = true}));
+    }
+
+    TEST_F(TraitsTests, MemberFunctionQualifiersConstVolatileRef)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructConstVolatileRef::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isVolatile = true, .isRef = true}));
+    }
 
-        // &&
+    TEST_F(TraitsTests, MemberFunctionQualifiersRvalueRef)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructRvalueRef::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isRvalueRef = true}));
+    }
+
+    TEST_F(TraitsTests, MemberFunctionQualifiersConstRvalueRef)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructConstRvalueRef::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isRvalueRef = true}));
+    }
+
+    TEST_F(TraitsTests, MemberFunctionQualifiersVolatileRvalueRef)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructVolatileRvalueRef::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isVolatile = true, .isRvalueRef = true}));
+    }
+
+    TEST_F(TraitsTests, MemberFunctionQualifiersConstVolatileRvalueRef)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructConstVolatileRvalueRef::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isVolatile = true, .isRvalueRef = true}));
+    }
 
-        // noexcept CV
+    TEST_F(TraitsTests, MemberFunctionQualifiersNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructNoexcept::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isNoexcept = true}));
+    }
+
+    TEST_F(TraitsTests, MemberFunctionQualifiersConstNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructConstNoexcept::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isNoexcept = true}));
+    }
+
+    TEST_F(TraitsTests, MemberFunctionQualifiersVolatileNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructVolatileNoexcept::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isVolatile = true, .isNoexcept = true}));
+    }
+
+    TEST_F(TraitsTests, MemberFunctionQualifiersConstVolatileNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructConstVolatileNoexcept::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isVolatile = true, .isNoexcept = true}));
+    }
 
-        // noexcept &
+    TEST_F(TraitsTests, MemberFunctionQualifiersRefNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructRefNoexcept::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isRef = true, .isNoexcept = true}));
+    }
+
+    TEST_F(TraitsTests, MemberFunctionQualifiersConstRefNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructConstRefNoexcept::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isRef = true, .isNoexcept = true}));
+    }
+
+    TEST_F(TraitsTests, MemberFunctionQualifiersVolatileRefNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructVolatileRefNoexcept::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isVolatile = true, .isRef = true, .isNoexcept = true}));
+    }
+
+    TEST_F(TraitsTests, MemberFunctionQualifiersConstVolatileRefNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructConstVolatileRefNoexcept::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isVolatile = true, .isRef = true, .isNoexcept = true}));
+    }
 
-        // noexcept &&
+    TEST_F(TraitsTests, MemberFunctionQualifiersRvalueRefNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructRvalueRefNoexcept::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isRvalueRef = true, .isNoexcept = true}));
+    }
+
+    TEST_F(TraitsTests, MemberFunctionQualifiersConstRvalueRefNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<decltype(&MemberFunctionStructConstRvalueRefNoexcept::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isConst = true, .isRvalueRef = true, .isNoexcept = true}));
+    }
+
+    TEST_F(TraitsTests, MemberFunctionQualifiersVolatileRvalueRefNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<
                 decltype(&MemberFunctionStructVolatileRvalueRefNoexcept::memberFunction)>::qualifiers,
             (Traits::FunctionQualifiers{.isVolatile = true, .isRvalueRef = true, .isNoexcept = true}));
+    }
+
+    TEST_F(TraitsTests, MemberFunctionQualifiersConstVolatileRvalueRefNoexcept)
+    {
         EXPECT_EQ(
             Traits::FunctionTraits<
                 decltype(&MemberFunctionStructConstVolatileRvalueRefNoexcept::memberFunction)>::qualifiers,
