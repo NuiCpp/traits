@@ -1,4 +1,5 @@
 #include "test_function_traits.hpp"
+#include "readme_example.hpp"
 
 #include <gtest/gtest.h>
 

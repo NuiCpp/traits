@@ -13,14 +13,15 @@ namespace Traits
     {
         bool isConst = false;
         bool isVolatile = false;
-        bool isRef = false;
-        bool isRvalueRef = false;
+        bool isReferenceQualified = false;
+        bool isRvalueReferenceQualified = false;
         bool isNoexcept = false;
 
         constexpr bool operator==(const FunctionQualifiers& other) const noexcept
         {
-            return isConst == other.isConst && isVolatile == other.isVolatile && isRef == other.isRef &&
-                isRvalueRef == other.isRvalueRef && isNoexcept == other.isNoexcept;
+            return isConst == other.isConst && isVolatile == other.isVolatile &&
+                isReferenceQualified == other.isReferenceQualified &&
+                isRvalueReferenceQualified == other.isRvalueReferenceQualified && isNoexcept == other.isNoexcept;
         }
     };
 
@@ -72,15 +73,6 @@ namespace Traits
 
         /// The function type as a std::function with decayed argument types (removes references and qualifiers).
         using StandardFunctionTypeDecayed = std::function<ReturnT(std::decay_t<Args>...)>;
-
-        struct AsStdFunctionImpl
-        {
-            using type = std::function<ReturnT(Args...)>;
-            using DecayedType = std::function<ReturnT(std::decay_t<Args>...)>;
-        };
-
-        using AsStdFunction = typename AsStdFunctionImpl::type;
-        using AsStdFunctionDecayed = typename AsStdFunctionImpl::DecayedType;
     };
 
     /**
@@ -125,34 +117,46 @@ namespace Traits
     namespace Detail
     {
         constexpr FunctionQualifiers cvQualified{.isConst = true, .isVolatile = true};
-        constexpr FunctionQualifiers constRef{.isConst = true, .isRef = true};
-        constexpr FunctionQualifiers volatileRef{.isVolatile = true, .isRef = true};
-        constexpr FunctionQualifiers cvRef{.isConst = true, .isVolatile = true, .isRef = true};
-        constexpr FunctionQualifiers constRvalueRef{.isConst = true, .isRvalueRef = true};
-        constexpr FunctionQualifiers volatileRvalueRef{.isVolatile = true, .isRvalueRef = true};
-        constexpr FunctionQualifiers cvRvalueRef{.isConst = true, .isVolatile = true, .isRvalueRef = true};
+        constexpr FunctionQualifiers constRef{.isConst = true, .isReferenceQualified = true};
+        constexpr FunctionQualifiers volatileRef{.isVolatile = true, .isReferenceQualified = true};
+        constexpr FunctionQualifiers cvRef{.isConst = true, .isVolatile = true, .isReferenceQualified = true};
+        constexpr FunctionQualifiers constRvalueRef{.isConst = true, .isRvalueReferenceQualified = true};
+        constexpr FunctionQualifiers volatileRvalueRef{.isVolatile = true, .isRvalueReferenceQualified = true};
+        constexpr FunctionQualifiers cvRvalueRef{
+            .isConst = true,
+            .isVolatile = true,
+            .isRvalueReferenceQualified = true};
 
         constexpr FunctionQualifiers constNoexcept{.isConst = true, .isNoexcept = true};
         constexpr FunctionQualifiers volatileNoexcept{.isVolatile = true, .isNoexcept = true};
         constexpr FunctionQualifiers cvNoexcept{.isConst = true, .isVolatile = true, .isNoexcept = true};
-        constexpr FunctionQualifiers refNoexcept{.isRef = true, .isNoexcept = true};
-        constexpr FunctionQualifiers rvalueRefNoexcept{.isRvalueRef = true, .isNoexcept = true};
-        constexpr FunctionQualifiers constRefNoexcept{.isConst = true, .isRef = true, .isNoexcept = true};
-        constexpr FunctionQualifiers volatileRefNoexcept{.isVolatile = true, .isRef = true, .isNoexcept = true};
+        constexpr FunctionQualifiers refNoexcept{.isReferenceQualified = true, .isNoexcept = true};
+        constexpr FunctionQualifiers rvalueRefNoexcept{.isRvalueReferenceQualified = true, .isNoexcept = true};
+        constexpr FunctionQualifiers constRefNoexcept{
+            .isConst = true,
+            .isReferenceQualified = true,
+            .isNoexcept = true};
+        constexpr FunctionQualifiers volatileRefNoexcept{
+            .isVolatile = true,
+            .isReferenceQualified = true,
+            .isNoexcept = true};
         constexpr FunctionQualifiers cvRefNoexcept{
             .isConst = true,
             .isVolatile = true,
-            .isRef = true,
+            .isReferenceQualified = true,
             .isNoexcept = true};
-        constexpr FunctionQualifiers constRvalueRefNoexcept{.isConst = true, .isRvalueRef = true, .isNoexcept = true};
+        constexpr FunctionQualifiers constRvalueRefNoexcept{
+            .isConst = true,
+            .isRvalueReferenceQualified = true,
+            .isNoexcept = true};
         constexpr FunctionQualifiers volatileRvalueRefNoexcept{
             .isVolatile = true,
-            .isRvalueRef = true,
+            .isRvalueReferenceQualified = true,
             .isNoexcept = true};
         constexpr FunctionQualifiers cvRvalueRefNoexcept{
             .isConst = true,
             .isVolatile = true,
-            .isRvalueRef = true,
+            .isRvalueReferenceQualified = true,
             .isNoexcept = true};
     }
 
@@ -161,11 +165,11 @@ namespace Traits
     TRAITS_LIB_CREATE_SPECIALIZATION(volatile, {.isVolatile = true})
     TRAITS_LIB_CREATE_SPECIALIZATION(const volatile, Detail::cvQualified)
 
-    TRAITS_LIB_CREATE_SPECIALIZATION(&, {.isRef = true})
+    TRAITS_LIB_CREATE_SPECIALIZATION(&, {.isReferenceQualified = true})
     TRAITS_LIB_CREATE_SPECIALIZATION(const&, Detail::constRef)
     TRAITS_LIB_CREATE_SPECIALIZATION(volatile&, Detail::volatileRef)
     TRAITS_LIB_CREATE_SPECIALIZATION(const volatile&, Detail::cvRef)
-    TRAITS_LIB_CREATE_SPECIALIZATION(&&, {.isRvalueRef = true})
+    TRAITS_LIB_CREATE_SPECIALIZATION(&&, {.isRvalueReferenceQualified = true})
     TRAITS_LIB_CREATE_SPECIALIZATION(const&&, Detail::constRvalueRef)
     TRAITS_LIB_CREATE_SPECIALIZATION(volatile&&, Detail::volatileRvalueRef)
     TRAITS_LIB_CREATE_SPECIALIZATION(const volatile&&, Detail::cvRvalueRef)

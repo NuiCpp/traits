@@ -1,47 +1,43 @@
-# traits
-A small header only utility library adding traits for function types in C++.
-
-# Usage
-Add the CMakeLists.txt to your project via `add_subdirectory` and then include the header in your source files:
-(Or add the header directly to your project.)
-
-```cmake
-cmake_minimum_required(VERSION 3.16) # or higher
-
-add_subdirectory(traits)
-```
-
-Then in your source files, you can include the header like this:
-```cpp
-#include <traits/functions.hpp>
-```
-
-# Examples
-```cpp
 #include <traits/functions.hpp>
 
-// All of these can be inspected:
-auto lambda = [](int x) { return x * 2; };
+#include <gtest/gtest.h>
 
-struct FunctionObject {
-    int operator()(double x) const {
-        return static_cast<int>(x);
+#include <type_traits>
+
+namespace Detail
+{
+    auto lambda = [](int x) {
+        return x * 2;
+    };
+
+    struct FunctionObject
+    {
+        int operator()(double x) const
+        {
+            return static_cast<int>(x);
+        }
+
+        std::string memberFunction(double x) const&
+        {
+            return std::to_string(x);
+        }
+    };
+
+    double freeFunction(double x)
+    {
+        return x * 2.0;
     }
-
-    std::string memberFunction(double x) const& {
-        return std::to_string(x);
-    }
-};
-
-double freeFunction(double x) {
-    return x * 2.0;
 }
 
-int main() {
+TEST(ReadmeExample, ReadmeFunctionExampleIsCorrect)
+{
+
     using namespace Traits;
 
     // Example of using FunctionTraits with a lambda
-    auto lambda = [](std::string const& x, std::size_t y) noexcept { return x.size() + y; };
+    auto lambda = [](std::string const& x, std::size_t y) noexcept {
+        return x.size() + y;
+    };
     using LambdaTraits = FunctionTraits<decltype(lambda)>;
 
     static_assert(LambdaTraits::arity == 2, "Lambda should have arity 1");
@@ -63,8 +59,4 @@ int main() {
     static_assert(
         std::is_same_v<LambdaTraits::StandardFunctionTypeDecayed, std::function<std::size_t(std::string, std::size_t)>>,
         "Standard function type decayed should match");
-
-    return 0;
 }
-```
-
