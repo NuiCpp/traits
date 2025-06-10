@@ -1,0 +1,57 @@
+name: Ubuntu
+
+on:
+  push:
+    branches:
+      - main
+      - devel
+      - 'feat/*'
+      - 'fix/*'
+  pull_request:
+    branches: ["main", "devel"]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  compiler_matrix:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        cxx_standard: [20, 23]
+        clang_version: ["17", "18", "19", "20"]
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: ninja-build libgtest-dev libgmock-dev
+
+      - name: Install clang
+        run: |
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh ${{ matrix.clang_version }}
+          sudo apt-get install -y clang-${{ matrix.clang_version }}
+
+      - name: Tool Version Dump
+        run: |
+          clang++ --version
+          cmake --version
+          ninja --version
+
+      - name: Symlink xlocale
+        run: sudo ln -s /usr/include/locale.h /usr/include/xlocale.h
+
+      - name: Configure CMake
+        run: cmake -B ${{github.workspace}}/build/clang_${{env.BUILD_TYPE}} -G"Ninja" -DTRAITS_LIBRARY_ENABLE_TESTS=on -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_CXX_EXTENSIONS=on -DCMAKE_CXX_COMPILER=clang++-${{ matrix.clang_version }} -DCMAKE_C_COMPILER=clang-${{ matrix.clang_version }} -DCMAKE_CXX_STANDARD=${{ matrix.cxx_standard }}
+        env:
+          Boost_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build/clang_${{env.BUILD_TYPE}} --config ${{env.BUILD_TYPE}}
+
+      - name: Test
+        working-directory: ${{github.workspace}}/build/clang_${{env.BUILD_TYPE}}
+        run: ./tests/traits-tests
