@@ -1,0 +1,43 @@
+name: MacOS
+
+on:
+  push:
+    branches: ["main", "devel"]
+  pull_request:
+    branches: ["main", "devel"]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Debug
+
+jobs:
+  macos:
+    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
+    # You can convert this to a matrix build if you need cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Brew Dependencies
+        run: brew install llvm@19 git googletest
+
+      - name: Tool Version Dump
+        run: |
+            clang++ --version
+            cmake --version
+            ninja --version
+
+      - name: Configure CMake
+        run: cmake -B ${{github.workspace}}/build/clang_${{env.BUILD_TYPE}} -G"Ninja" -DTRAITS_LIBRARY_ENABLE_TESTS=on -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_CXX_EXTENSIONS=off -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@19/bin/clang++ -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@19/bin/clang -DCMAKE_CXX_STANDARD=20
+        env:
+          LDFLAGS: "-L/opt/homebrew/opt/llvm@19/lib/c++ -L/opt/homebrew/opt/llvm@19/lib/unwind -lunwind"
+          CPPFLAGS: "-I/opt/homebrew/opt/llvm@19/include -I/opt/homebrew/include"
+
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build/clang_${{env.BUILD_TYPE}} --config ${{env.BUILD_TYPE}}
+
+      - name: Test
+        working-directory: ${{github.workspace}}/build/clang_${{env.BUILD_TYPE}}
+        run: ./tests/traits-tests

@@ -96,11 +96,12 @@ namespace Traits
      * @tparam Args
      */
     template <typename ReturnT, typename... Args>
-    struct FunctionTraitsImpl<ReturnT (*)(Args...)> : public FunctionTraitsCommon<ReturnT, {}, Args...>
+    struct FunctionTraitsImpl<ReturnT (*)(Args...)>
+        : public FunctionTraitsCommon<ReturnT, FunctionQualifiers{}, Args...>
     {};
     template <typename ReturnT, typename... Args>
     struct FunctionTraitsImpl<ReturnT (*)(Args...) noexcept>
-        : public FunctionTraitsCommon<ReturnT, {.isNoexcept = true}, Args...>
+        : public FunctionTraitsCommon<ReturnT, FunctionQualifiers{.isNoexcept = true}, Args...>
     {};
 
 #define TRAITS_LIB_CREATE_SPECIALIZATION(QUALIFIER, QUALIFIER_OBJECT) \
@@ -160,21 +161,21 @@ namespace Traits
             .isNoexcept = true};
     }
 
-    TRAITS_LIB_CREATE_SPECIALIZATION(, {})
-    TRAITS_LIB_CREATE_SPECIALIZATION(const, {.isConst = true})
-    TRAITS_LIB_CREATE_SPECIALIZATION(volatile, {.isVolatile = true})
+    TRAITS_LIB_CREATE_SPECIALIZATION(, FunctionQualifiers{})
+    TRAITS_LIB_CREATE_SPECIALIZATION(const, FunctionQualifiers{.isConst = true})
+    TRAITS_LIB_CREATE_SPECIALIZATION(volatile, FunctionQualifiers{.isVolatile = true})
     TRAITS_LIB_CREATE_SPECIALIZATION(const volatile, Detail::cvQualified)
 
-    TRAITS_LIB_CREATE_SPECIALIZATION(&, {.isReferenceQualified = true})
+    TRAITS_LIB_CREATE_SPECIALIZATION(&, FunctionQualifiers{.isReferenceQualified = true})
     TRAITS_LIB_CREATE_SPECIALIZATION(const&, Detail::constRef)
     TRAITS_LIB_CREATE_SPECIALIZATION(volatile&, Detail::volatileRef)
     TRAITS_LIB_CREATE_SPECIALIZATION(const volatile&, Detail::cvRef)
-    TRAITS_LIB_CREATE_SPECIALIZATION(&&, {.isRvalueReferenceQualified = true})
+    TRAITS_LIB_CREATE_SPECIALIZATION(&&, FunctionQualifiers{.isRvalueReferenceQualified = true})
     TRAITS_LIB_CREATE_SPECIALIZATION(const&&, Detail::constRvalueRef)
     TRAITS_LIB_CREATE_SPECIALIZATION(volatile&&, Detail::volatileRvalueRef)
     TRAITS_LIB_CREATE_SPECIALIZATION(const volatile&&, Detail::cvRvalueRef)
 
-    TRAITS_LIB_CREATE_SPECIALIZATION(noexcept, {.isNoexcept = true})
+    TRAITS_LIB_CREATE_SPECIALIZATION(noexcept, FunctionQualifiers{.isNoexcept = true})
     TRAITS_LIB_CREATE_SPECIALIZATION(const noexcept, Detail::constNoexcept)
     TRAITS_LIB_CREATE_SPECIALIZATION(volatile noexcept, Detail::volatileNoexcept)
     TRAITS_LIB_CREATE_SPECIALIZATION(const volatile noexcept, Detail::cvNoexcept)
