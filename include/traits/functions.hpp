@@ -209,7 +209,7 @@ namespace Traits
          * @tparam FunctionT The function type to check.
          */
         template <typename FunctionT>
-        concept IsFunctionObject =
+        concept FunctionObject =
             (!std::is_function_v<typename std::remove_pointer_t<FunctionT>> &&
              !std::is_member_function_pointer_v<FunctionT> && HasCallOperator<std::decay_t<FunctionT>>::value);
 
@@ -219,7 +219,7 @@ namespace Traits
          * @tparam FunctionT
          */
         template <typename FunctionT>
-        concept IsRegularFunction = std::is_function_v<FunctionT> && !std::is_member_function_pointer_v<FunctionT>;
+        concept RegularFunction = std::is_function_v<FunctionT> && !std::is_member_function_pointer_v<FunctionT>;
 
         /**
          * @brief This concept is true when the function is a member function pointer.
@@ -227,17 +227,17 @@ namespace Traits
          * @tparam FunctionT
          */
         template <typename FunctionT>
-        concept IsMemberFunctionPointer = std::is_member_function_pointer_v<FunctionT>;
+        concept MemberFunctionPointer = std::is_member_function_pointer_v<FunctionT>;
 
         template <typename MaybeFunctionT>
-        struct IsCallableImpl
+        struct CallableImpl
         {
             static constexpr bool value = false;
         };
 
         template <typename MaybeFunctionT>
-        requires Detail::IsFunctionObject<MaybeFunctionT> || Detail::IsRegularFunction<MaybeFunctionT>
-        struct IsCallableImpl<MaybeFunctionT>
+        requires Detail::FunctionObject<MaybeFunctionT> || Detail::RegularFunction<MaybeFunctionT>
+        struct CallableImpl<MaybeFunctionT>
         {
             static constexpr bool value = true;
         };
@@ -254,7 +254,7 @@ namespace Traits
      * @tparam FunctionT
      */
     template <typename FunctionT>
-    requires Detail::IsFunctionObject<FunctionT>
+    requires Detail::FunctionObject<FunctionT>
     struct FunctionTraits<FunctionT> : public FunctionTraitsImpl<decltype(&std::decay_t<FunctionT>::operator())>
     {};
 
@@ -264,7 +264,7 @@ namespace Traits
      * @tparam FunctionT
      */
     template <typename FunctionT>
-    requires Detail::IsRegularFunction<FunctionT>
+    requires Detail::RegularFunction<FunctionT>
     struct FunctionTraits<FunctionT> : public FunctionTraitsImpl<FunctionT>
     {};
 
@@ -284,7 +284,7 @@ namespace Traits
      * @tparam FunctionT
      */
     template <typename FunctionT>
-    requires Detail::IsMemberFunctionPointer<FunctionT>
+    requires Detail::MemberFunctionPointer<FunctionT>
     struct FunctionTraits<FunctionT> : public FunctionTraitsImpl<FunctionT>
     {};
 
@@ -296,7 +296,7 @@ namespace Traits
      * @tparam MaybeFunctionT
      */
     template <typename MaybeFunctionT>
-    concept IsCallable = Detail::IsCallableImpl<std::decay_t<MaybeFunctionT>>::value;
+    concept Callable = Detail::CallableImpl<std::decay_t<MaybeFunctionT>>::value;
 
     namespace Detail
     {
@@ -325,11 +325,11 @@ namespace Traits
         };
 
         template <typename T, unsigned Arity>
-        static constexpr auto isCallableOfArityImpl = std::conjunction_v<IsCallableImpl<T>, ArityCheck<T, Arity>>;
+        static constexpr auto isCallableOfArityImpl = std::conjunction_v<CallableImpl<T>, ArityCheck<T, Arity>>;
 
         template <typename T, unsigned Arity>
         static constexpr auto isCallableOfAtLeastArityImpl =
-            std::conjunction_v<IsCallableImpl<T>, ArityCheckAtLeast<T, Arity>>;
+            std::conjunction_v<CallableImpl<T>, ArityCheckAtLeast<T, Arity>>;
     }
 
     /**
@@ -339,7 +339,7 @@ namespace Traits
      * @tparam Arity The arity of the function to check for.
      */
     template <typename T, unsigned Arity>
-    concept IsCallableOfArity = Detail::isCallableOfArityImpl<std::decay_t<T>, Arity>;
+    concept CallableOfArity = Detail::isCallableOfArityImpl<std::decay_t<T>, Arity>;
 
     /**
      * @brief Is the type a callable with a at least this number of arguments 'arity?'.
@@ -348,5 +348,5 @@ namespace Traits
      * @tparam Arity The arity of the function to check for.
      */
     template <typename T, unsigned Arity>
-    concept IsCallableOfAtLeastArity = Detail::isCallableOfAtLeastArityImpl<std::decay_t<T>, Arity>;
+    concept CallableOfAtLeastArity = Detail::isCallableOfAtLeastArityImpl<std::decay_t<T>, Arity>;
 }
